@@ -20,6 +20,10 @@ public class Enigma {
   String in;
   String t = "";
   String finalWord = "";
+  String keyMap;
+  String msg;
+  String message;
+  String mappedKey;
 
 
   public int getIntInput() {
@@ -124,10 +128,100 @@ public class Enigma {
   }
   //End of Caesar encryption
 
+  //Beginning of Vigenere encrypt
   public void encryptVignere() {
-    System.out.println("This function is currently unavailable");
-    runScript();
+    System.out.println(TEXT_RED + "***Message and key should be alphabetic***" + TEXT_RESET);
+    enterMessage();
+    mapTheKey();
+    printVigenere();
+    encryptCipher(message, mappedKey);
+
   }
+
+  public void encryptCipher(String message, String mappedKey) {
+    int[][] table = createVigenereTable();
+    String encryptedText = "";
+    for (int i = 0; i < message.length(); i++) {
+      if (message.charAt(i) == (char) 32 && mappedKey.charAt(i) == (char) 32) {
+        encryptedText += " ";
+      } else {
+        encryptedText += (char)table[ (int)message.charAt(i) - 65] [(int)mappedKey.charAt(i) -65];
+      }
+    }
+    System.out.println("Encrypted Text: " + encryptedText);
+  }
+
+  public int[][] createVigenereTable() {
+    //Create 26*26 table containing alphabets
+    int[][] tableArray = new int[26][26];
+    for (int i = 0; i < 26; i++) {
+      for (int j = 0; j < 26; j++) {
+        int temp;
+        if ((i + 65) + j > 90) {
+          temp = ((i + 65) + j) + 26;
+          tableArray[i][j] = temp;
+        } else {
+          temp = (i + 65) + j;
+          tableArray[i][j] = temp;
+        }
+      }
+    }
+    for (int i = 0; i < 26; i++) {
+      for (int j = 0; j < 26; j++) {
+        System.out.print((char) tableArray[i][j] + " ");
+      }
+      System.out.println();
+    }
+    return tableArray;
+  }
+
+  public void enterMessage() {
+    //String input
+    System.out.print("Please enter your message: ");
+    input.nextLine();
+    msg = getStringInput();
+    msg = msg.toUpperCase(Locale.ROOT);
+
+  }
+
+  public void mapTheKey() {
+    //Key input
+    System.out.print("Please enter key: ");
+    String key = getStringInput();
+    key = key.toUpperCase(Locale.ROOT);
+
+    //Map key to message
+    keyMap = "";
+    for (int i = 0, j = 0; i < msg.length(); i++) {
+      if (msg.charAt(i) == (char) 32) {
+        //Ignore space
+        keyMap += (char) 32;
+
+      } else {
+        //Map letters of key with letters
+        if (j < key.length()) {
+          keyMap += key.charAt(j);
+          j++;
+        } else {
+          //Restarting key from beginning, once length complete
+          // And still not mapped
+          j = 0;
+          keyMap += key.charAt(j);
+          j++; // key's first letter will be mapped twice
+        }
+      }
+
+    }
+
+  }
+
+  public void printVigenere() {
+    message = msg;
+    mappedKey = keyMap;
+    System.out.println("Message: " + message);
+    System.out.println("Key: " + mappedKey);
+  }
+  //End of Vigenere encryption
 
   //Beginning of number encryption
   public void encryptNumber() {
@@ -223,26 +317,29 @@ public class Enigma {
       moreLettersKey2();
     }
   }
-    public void moreLettersKey1() {
-      input.nextLine();
-      System.out.print("Does the keycode contain more numbers? y/n: ");
-      callStringInputLowerCase();
-      if (in.contains("y")) {
-        System.out.print("Please enter the next number: ");
-        enterKey1();
-      } else if (in.contains("n")) {
-        System.out.println(finalWord);
-      } else {
-        System.out.println("You might have misspelled, try again");
-        moreLettersKey1();
-      }
+
+  public void moreLettersKey1() {
+    input.nextLine();
+    System.out.print("Does the keycode contain more numbers? y/n: ");
+    callStringInputLowerCase();
+    if (in.contains("y")) {
+      System.out.print("Please enter the next number: ");
+      enterKey1();
+    } else if (in.contains("n")) {
+      System.out.println(finalWord);
+    } else {
+      System.out.println("You might have misspelled, try again");
+      moreLettersKey1();
     }
+  }
   //End of Caesar decryption
 
+  //Beginning of Vigenere decryption
   public void decryptVignere() {
     System.out.println("This function is currently unavailable");
     runScript();
   }
+  //End of Vigenere decryption
 
   //Beginning of number decryption
   public void decryptNumber() {
